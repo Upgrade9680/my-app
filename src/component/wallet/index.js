@@ -7,9 +7,7 @@ const Wallet = () => {
   const { selectedItems } = useCart();
   const navigate = useNavigate();
 
-  const totalAmountUsed = selectedItems.length
-    ? selectedItems.reduce((total, item) => total + Number(item.Number), 0)
-    : 0;
+  const WALLET_AMOUNT = 1400; // Wallet amount provided
 
   const generateTableData = () => {
     if (!selectedItems.length) {
@@ -39,6 +37,10 @@ const Wallet = () => {
 
   const { tableRows, totalRowSum } = generateTableData();
 
+  // Calculate Available and You Pay amounts
+  const available = totalRowSum < WALLET_AMOUNT ? WALLET_AMOUNT - totalRowSum : 0;
+  const youPay = totalRowSum > WALLET_AMOUNT ? totalRowSum - WALLET_AMOUNT : 0;
+
   const handleCheckout = () => {
     navigate("/invoice", { state: { data: selectedItems } });
   };
@@ -46,7 +48,7 @@ const Wallet = () => {
   return (
     <div className="Container">
       <div className="WalletContainer">
-        <div className="WalletText">Wallet Allocation: {totalRowSum}</div>
+        <div className="WalletText">Wallet Allocation: {WALLET_AMOUNT}</div>
       </div>
 
       <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
@@ -58,26 +60,24 @@ const Wallet = () => {
           }}
         >
           <tbody>
-            {[
-              ["Point", "Multiplier", "Total"],
-              ...tableRows,
-              ["", "Total", totalRowSum],
-            ].map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {row.map((cell, colIndex) => (
-                  <td
-                    key={colIndex}
-                    style={{
-                      border: "1.5px solid black",
-                      padding: "8px",
-                      textAlign: "left",
-                    }}
-                  >
-                    {cell}
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {[["Point", "Multiplier", "Total"], ...tableRows, ["", "Total", totalRowSum]].map(
+              (row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {row.map((cell, colIndex) => (
+                    <td
+                      key={colIndex}
+                      style={{
+                        border: "1.5px solid black",
+                        padding: "8px",
+                        textAlign: "left",
+                      }}
+                    >
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              )
+            )}
           </tbody>
         </table>
       </div>
@@ -85,7 +85,7 @@ const Wallet = () => {
       <div className="WalletAmount">
         <div className="Amount">
           <h5>Wallet Amount</h5>
-          <h5>{totalRowSum}</h5>
+          <h5>{WALLET_AMOUNT}</h5>
         </div>
         <div className="Amount">
           <h5>Used</h5>
@@ -93,11 +93,11 @@ const Wallet = () => {
         </div>
         <div className="Amount">
           <h5>Available</h5>
-          <h5>0</h5>
+          <h5>{available}</h5>
         </div>
         <div className="Amount">
           <h5>You Pay</h5>
-          <h5>0</h5>
+          <h5>{youPay}</h5>
         </div>
       </div>
 
