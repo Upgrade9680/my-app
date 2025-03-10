@@ -24,11 +24,10 @@
     position: absolute; 
     left: -40px; 
     top: 50%; 
-    transform: translateY(-50%);
+    transform: translateY(-50%) rotate(270deg);
     font-size: 14px;
     font-weight: bold;
     white-space: nowrap;
-    transform: rotate(270deg); 
 }
 
 /* Header */

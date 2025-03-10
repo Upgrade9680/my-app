@@ -37,6 +37,10 @@ const Invoice = () => {
     pdf.save("invoice.pdf");
   };
 
+  const calculateXValue = (data) => {
+    return data === 'X0.5' ? 0.5 : (data.includes('X') ? parseFloat(data.replace("X", "")) : 0.5);
+  };
+
   const totalPoints = filteredItems.reduce(
     (total, item) => total + Number(item.Number),
     0
@@ -44,7 +48,7 @@ const Invoice = () => {
   const totalAmount = filteredItems.reduce(
     (total, item) => {
       console.log('Item data:', item.data);
-      const xValue = item.data === 'X0.5' ? 0.5 : (item.data.includes('X') ? parseFloat(item.data.replace("X", "")) : 0.5);
+      const xValue = calculateXValue(item.data);
       console.log('Calculated X value:', xValue);
       return total + (Number(item.Number) * xValue);
     },
@@ -68,7 +72,7 @@ const Invoice = () => {
         <tbody>
           {filteredItems.map((item, index) => {
             console.log('Processing item:', item);
-            const xValue = item.data === 'X0.5' ? 0.5 : (item.data.includes('X') ? parseFloat(item.data.replace("X", "")) : 0.5);
+            const xValue = calculateXValue(item.data);
             const total = Number(item.Number) * xValue;
             console.log('Row calculation:', { points: item.Number, xValue, total });
 

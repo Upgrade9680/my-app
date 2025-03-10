@@ -8,34 +8,42 @@ const Cart = () => {
   const [checkedItems, setCheckedItems] = useState({});
   const { addItem, removeItem } = useCart();
 
+  const getItemColor = (id) => {
+    if (id >= 9 && id <= 12) return "orange";
+    if (id >= 5 && id <= 8) return "green";
+    return "blue";
+  };
+
+  const getBackgroundStyle = (id, isChecked) => {
+    if (!isChecked) return "white";
+    if (id >= 9 && id <= 12) return "linear-gradient(to bottom, #fff9d6, #fff4a3)";
+    if (id >= 5 && id <= 8) return "linear-gradient(to bottom, #dfffdb, #90ee90)";
+    return "linear-gradient(to bottom, #e0f0ff, #a3c9f8)";
+  };
+
   const handleCheckBox = (id) => {
-    let newCheckedItems = { ...checkedItems };
-    let selectedItem = Data.find((item) => item.id === id);
-    
+    const selectedItem = Data.find((item) => item.id === id);
     if (!selectedItem) return;
 
-    if (id >= 1 && id <= 4) {
-      for (let i = 1; i <= 4; i++) {
-        newCheckedItems[i] = i === id ? !checkedItems[i] : false;
-      }
-    } else if (id >= 5 && id <= 8) {
-      for (let i = 5; i <= 8; i++) {
-        newCheckedItems[i] = i === id ? !checkedItems[i] : false;
-      }
-    } else if (id >= 9 && id <= 12) {
-      for (let i = 9; i <= 12; i++) {
-        newCheckedItems[i] = i === id ? !checkedItems[i] : false;
-      }
+    const newCheckedItems = { ...checkedItems };
+    const startId = id <= 4 ? 1 : id <= 8 ? 5 : 9;
+    const endId = id <= 4 ? 4 : id <= 8 ? 8 : 12;
+
+    // Update checked items in the same group
+    for (let i = startId; i <= endId; i++) {
+      newCheckedItems[i] = i === id ? !checkedItems[i] : false;
     }
 
     setCheckedItems(newCheckedItems);
 
+    // Remove unchecked items
     Object.keys(checkedItems).forEach((key) => {
       if (!newCheckedItems[key]) {
         removeItem(Number(key));
       }
     });
 
+    // Add newly checked item
     if (newCheckedItems[id]) {
       addItem(selectedItem);
     }
@@ -51,26 +59,14 @@ const Cart = () => {
               <div className="CartContainer" key={item.id}>
                 <div
                   className="ItemsNames"
-                  style={{
-                    color: item.id >= 9 && item.id <= 12
-                      ? "orange"
-                      : item.id >= 5 && item.id <= 8
-                      ? "green"
-                      : "blue",
-                  }}
+                  style={{ color: getItemColor(item.id) }}
                 >
                   {item.Name}
                 </div>
                 <div
                   className="CartBox"
                   style={{
-                    background: checkedItems[item.id]
-                      ? item.id >= 9 && item.id <= 12
-                        ? "linear-gradient(to bottom, #fff9d6, #fff4a3)"
-                        : item.id >= 5 && item.id <= 8
-                        ? "linear-gradient(to bottom, #dfffdb, #90ee90)"
-                        : "linear-gradient(to bottom, #e0f0ff, #a3c9f8)"
-                      : "white",
+                    background: getBackgroundStyle(item.id, checkedItems[item.id]),
                   }}
                 >
                   <div className="innerBox">

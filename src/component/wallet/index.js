@@ -6,43 +6,42 @@ import { useNavigate } from "react-router-dom";
 const Wallet = () => {
   const { selectedItems } = useCart();
   const navigate = useNavigate();
-
-  const WALLET_AMOUNT = 1400; // Wallet amount provided
+  const WALLET_AMOUNT = 1400;
 
   const generateTableData = () => {
     if (!selectedItems.length) {
-      return {
-        tableRows: [["", "", "0"]],
-        totalRowSum: 0,
-      };
+      return { tableRows: [["", "", "0"]], totalRowSum: 0 };
     }
 
     const tableRows = selectedItems.map((item) => {
       const multiplierString = item.data ? item.data.toUpperCase() : "X1";
-
       const multiplier = parseInt(multiplierString.replace("X", ""), 10) || 1;
-
       const total = item.Number * multiplier;
-
       return [item.Number, multiplier, total];
     });
 
     const totalRowSum = tableRows.reduce((acc, row) => acc + row[2], 0);
-
-    return {
-      tableRows,
-      totalRowSum,
-    };
+    return { tableRows, totalRowSum };
   };
 
   const { tableRows, totalRowSum } = generateTableData();
-
-  // Calculate Available and You Pay amounts
   const available = totalRowSum < WALLET_AMOUNT ? WALLET_AMOUNT - totalRowSum : 0;
   const youPay = totalRowSum > WALLET_AMOUNT ? totalRowSum - WALLET_AMOUNT : 0;
 
   const handleCheckout = () => {
     navigate("/invoice", { state: { data: selectedItems } });
+  };
+
+  const tableStyle = {
+    borderCollapse: "collapse",
+    width: "100%",
+    border: "1.5px solid black",
+  };
+
+  const cellStyle = {
+    border: "1.5px solid black",
+    padding: "8px",
+    textAlign: "left",
   };
 
   return (
@@ -52,26 +51,13 @@ const Wallet = () => {
       </div>
 
       <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-        <table
-          style={{
-            borderCollapse: "collapse",
-            width: "100%",
-            border: "1.5px solid black",
-          }}
-        >
+        <table style={tableStyle}>
           <tbody>
             {[["Point", "Multiplier", "Total"], ...tableRows, ["", "Total", totalRowSum]].map(
               (row, rowIndex) => (
                 <tr key={rowIndex}>
                   {row.map((cell, colIndex) => (
-                    <td
-                      key={colIndex}
-                      style={{
-                        border: "1.5px solid black",
-                        padding: "8px",
-                        textAlign: "left",
-                      }}
-                    >
+                    <td key={colIndex} style={cellStyle}>
                       {cell}
                     </td>
                   ))}
