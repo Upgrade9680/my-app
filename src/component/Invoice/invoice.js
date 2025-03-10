@@ -7,6 +7,12 @@ import "./style.css";
 const Invoice = () => {
   const location = useLocation();
   const selectedItems = location.state?.data || [];
+  
+  console.log('Received data:', location.state);
+  console.log('Selected items:', selectedItems);
+
+  // Remove the filter since we're already receiving selected items
+  const filteredItems = selectedItems;
 
   const generatePDF = async () => {
     const invoiceElement = document.querySelector(".invoice-container");
@@ -31,11 +37,11 @@ const Invoice = () => {
     pdf.save("invoice.pdf");
   };
 
-  const totalPoints = selectedItems.reduce(
+  const totalPoints = filteredItems.reduce(
     (total, item) => total + Number(item.Number),
     0
   );
-  const totalAmount = selectedItems.reduce(
+  const totalAmount = filteredItems.reduce(
     (total, item) => {
       console.log('Item data:', item.data);
       const xValue = item.data === 'X0.5' ? 0.5 : (item.data.includes('X') ? parseFloat(item.data.replace("X", "")) : 0.5);
@@ -60,7 +66,7 @@ const Invoice = () => {
           </tr>
         </thead>
         <tbody>
-          {selectedItems.map((item, index) => {
+          {filteredItems.map((item, index) => {
             console.log('Processing item:', item);
             const xValue = item.data === 'X0.5' ? 0.5 : (item.data.includes('X') ? parseFloat(item.data.replace("X", "")) : 0.5);
             const total = Number(item.Number) * xValue;
@@ -68,7 +74,7 @@ const Invoice = () => {
 
             return (
               <tr key={index}>
-                <td>{`Benefit ${index + 1}`}</td>
+                <td>{item.value}</td>
                 <td>Details</td>
                 <td>{item.Number}</td>
                 <td>{xValue}</td>
