@@ -36,9 +36,10 @@ const Invoice = () => {
     0
   );
   const totalAmount = selectedItems.reduce(
-    (total, item) =>
-      total +
-      Number(item.Number) * (parseInt(item.data.replace("X", ""), 10) || 1),
+    (total, item) => {
+      const xValue = item.data.includes('X') ? parseFloat(item.data.replace("X", "")) : 0.5;
+      return total + (Number(item.Number) * xValue);
+    },
     0
   );
 
@@ -49,25 +50,25 @@ const Invoice = () => {
       <table className="invoice-table">
         <thead>
           <tr>
-            <th>Benefit</th>
+            <th>Multiplier</th>
             <th>Description</th>
             <th>Points</th>
-            <th>Multiplier</th>
+            <th>X Value</th>
             <th>Amount</th>
           </tr>
         </thead>
         <tbody>
           {selectedItems.map((item, index) => {
-            const multiplier = parseInt(item.data.replace("X", ""), 10) || 1;
-            const total = item.Number * multiplier;
+            const xValue = item.data.includes('X') ? parseFloat(item.data.replace("X", "")) : 0.5;
+            const total = Number(item.Number) * xValue;
 
             return (
               <tr key={index}>
-                <td>{`Benefit ${index + 1}`}</td>
-                <td>Details</td>
+                <td>{`X${xValue}`}</td>
+                <td>Multiplier Value</td>
                 <td>{item.Number}</td>
-                <td>{multiplier}</td>
-                <td>{total}</td>
+                <td>{xValue}</td>
+                <td>{total.toFixed(2)}</td>
               </tr>
             );
           })}
@@ -77,7 +78,7 @@ const Invoice = () => {
             </td>
             <td className="total-points">{totalPoints}</td>
             <td></td>
-            <td className="total-amount">{totalAmount}</td>
+            <td className="total-amount">{totalAmount.toFixed(2)}</td>
           </tr>
         </tbody>
       </table>
